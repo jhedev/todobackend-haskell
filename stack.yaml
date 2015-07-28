@@ -1,0 +1,6 @@
+flags: {}
+packages:
+- todobackend-common
+- todobackend-scotty
+extra-deps: []
+resolver: lts-2.20
