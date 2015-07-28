@@ -2,5 +2,6 @@ flags: {}
 packages:
 - todobackend-common
 - todobackend-scotty
+- todobackend-servant
 extra-deps: []
 resolver: nightly-2015-07-28
