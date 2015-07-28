@@ -32,7 +32,7 @@ Todo
 instance ToJSON (Sqlite.Entity Todo) where
   toJSON entity = object
       [ "id" .= key
-      , "url" .= ("http://todobackend-scotty.herokuapp.com/todos/" ++ keyText)
+      , "url" .= ("http://127.0.0.1:3000/todos/" ++ keyText)
       , "title" .= todoTitle val
       , "completed" .= todoCompleted val
       , "order" .= todoOrder val
