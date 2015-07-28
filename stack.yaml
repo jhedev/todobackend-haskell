@@ -3,6 +3,7 @@ packages:
 - todobackend-common
 - todobackend-scotty
 - todobackend-servant
+- todobackend-spock
 - todobackend-yesod
 extra-deps: []
 resolver: nightly-2015-07-28
