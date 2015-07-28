@@ -3,4 +3,4 @@ packages:
 - todobackend-common
 - todobackend-scotty
 extra-deps: []
-resolver: lts-2.20
+resolver: nightly-2015-07-28

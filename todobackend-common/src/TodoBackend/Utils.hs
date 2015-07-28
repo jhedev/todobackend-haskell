@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module TodoBackend.Utils where
 
-import Network.Wai (Middleware)
+import Network.HTTP.Types
+import Network.Wai
 import Network.Wai.Middleware.AddHeaders
 
 allowCors :: Middleware

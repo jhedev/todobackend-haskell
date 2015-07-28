@@ -19,6 +19,7 @@ library
                        , TodoBackend.Utils
   build-depends:         base >= 4.7 && < 5
                        , aeson
+                       , http-types
                        , monad-logger
                        , path-pieces
                        , persistent
