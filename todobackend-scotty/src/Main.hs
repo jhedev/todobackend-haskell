@@ -16,6 +16,7 @@ main = do
   port <- read <$> getEnv "PORT"
   scotty port $ do
     middleware allowCors
+    middleware allowOptions
     get "/todos" $ do
       todos <- liftIO readTodos
       json todos
@@ -40,8 +41,6 @@ main = do
       tid <- liftIO $ insertTodo todo
       json (Sqlite.Entity tid todo)
     delete "/todos" $ liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
-    matchAny "/todos" $ text "ok"
-    matchAny "/todos/:id" $ text "ok"
   where
     readTodos :: IO [Sqlite.Entity Todo]
     readTodos =  runDb $ Sqlite.selectList [] []
