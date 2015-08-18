@@ -74,6 +74,7 @@ todoHandler = do
 
 main :: IO ()
 main = do
+  runDb $ Sqlite.runMigration migrateAll
   port <- read <$> getEnv "PORT"
   let config = setPort port defaultConfig
   httpServe config site
