@@ -26,7 +26,7 @@ allowCors = mapM_ (modifyResponse . uncurry setHeader) [
   ]
 
 optionsResp :: Snap ()
-optionsResp = method OPTIONS $ allowCors
+optionsResp = method OPTIONS allowCors
 
 todosHandler :: Snap ()
 todosHandler = do
