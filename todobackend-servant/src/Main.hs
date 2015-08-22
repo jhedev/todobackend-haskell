@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings          #-}
 import           Control.Applicative          ((<$>))
 import           Control.Monad.IO.Class       (liftIO)
+import           Control.Monad.Reader         (ReaderT, runReaderT, lift, asks)
 import           Control.Monad.Trans.Either
 import           Data.Proxy
 import qualified Database.Persist.Sqlite      as Sqlite
@@ -15,47 +16,66 @@ import           TodoBackend.Model
 import           TodoBackend.Utils
 
 
-type TodoApi = "todos" :> Get '[JSON] [Sqlite.Entity Todo]
+data App = App
+  {
+    appRoot :: String
+  }
+
+type TodoApi = "todos" :> Get '[JSON] [TodoResponse]
             :<|> "todos" :> Delete '[JSON] ()
-            :<|> "todos" :> ReqBody '[JSON] TodoAction :> Post '[JSON] (Sqlite.Entity Todo)
-            :<|> "todos" :> Capture "todoid" Integer :> Get '[JSON] (Sqlite.Entity Todo)
+            :<|> "todos" :> ReqBody '[JSON] TodoAction :> Post '[JSON] TodoResponse
+            :<|> "todos" :> Capture "todoid" Integer :> Get '[JSON] TodoResponse
             :<|> "todos" :> Capture "todoid" Integer :> Delete '[JSON] ()
-            :<|> "todos" :> Capture "todoid" Integer :> ReqBody '[JSON] TodoAction :> Patch '[JSON] (Sqlite.Entity Todo)
+            :<|> "todos" :> Capture "todoid" Integer :> ReqBody '[JSON] TodoAction :> Patch '[JSON] TodoResponse
+
+type AppM = ReaderT App (EitherT ServantErr IO)
+
+toResp :: Sqlite.Entity Todo -> AppM TodoResponse
+toResp todo = do
+  url <- asks appRoot
+  return $ mkTodoResponse url todo
+
+toRespL :: [Sqlite.Entity Todo] -> AppM [TodoResponse]
+toRespL todos = do
+  url <- asks appRoot
+  return $ map (mkTodoResponse url) todos
 
 todoApi :: Proxy TodoApi
 todoApi = Proxy
 
-getTodos :: EitherT ServantErr IO [Sqlite.Entity Todo]
-getTodos = liftIO $ runDb $ Sqlite.selectList [] ([] :: [Sqlite.SelectOpt Todo])
+getTodos :: AppM [TodoResponse]
+getTodos = do
+  todos <- liftIO $ runDb $ Sqlite.selectList [] ([] :: [Sqlite.SelectOpt Todo])
+  toRespL todos
 
-deleteTodos :: EitherT ServantErr IO ()
+deleteTodos :: AppM ()
 deleteTodos =  liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
 
-getTodo :: Integer -> EitherT ServantErr IO (Sqlite.Entity Todo)
+getTodo :: Integer -> AppM TodoResponse
 getTodo tid = do
   let tKey = Sqlite.toSqlKey (fromIntegral tid)
   Just todo <- liftIO $ runDb $ Sqlite.get tKey
-  return $ Sqlite.Entity tKey todo
+  toResp $ Sqlite.Entity tKey todo
 
-deleteTodo :: Integer -> EitherT ServantErr IO ()
+deleteTodo :: Integer -> AppM ()
 deleteTodo tid = do
   let tKey = Sqlite.toSqlKey (fromIntegral tid)
   liftIO $ runDb $ Sqlite.delete (tKey :: Sqlite.Key Todo)
 
-postTodo :: TodoAction -> EitherT ServantErr IO (Sqlite.Entity Todo)
+postTodo :: TodoAction -> AppM TodoResponse
 postTodo todoAct = do
   let todo = actionToTodo todoAct
   tid <- liftIO $ runDb $ Sqlite.insert todo
-  return $ Sqlite.Entity tid todo
+  toResp $ Sqlite.Entity tid todo
 
-patchTodo :: Integer -> TodoAction -> EitherT ServantErr IO (Sqlite.Entity Todo)
+patchTodo :: Integer -> TodoAction -> AppM TodoResponse
 patchTodo tid todoAct = do
   let tKey = Sqlite.toSqlKey (fromIntegral tid)
       updates = actionToUpdates todoAct
   todo <- liftIO $ runDb $ Sqlite.updateGet tKey updates
-  return $ Sqlite.Entity tKey todo
+  toResp $ Sqlite.Entity tKey todo
 
-server :: Server TodoApi
+server :: ServerT TodoApi AppM
 server =      getTodos
          :<|> deleteTodos
          :<|> postTodo
@@ -63,11 +83,19 @@ server =      getTodos
          :<|> deleteTodo
          :<|> patchTodo
 
-waiApp :: Application
-waiApp = allowCors $ allowOptions $ serve todoApi server
+readerToEither :: App -> AppM :~> EitherT ServantErr IO
+readerToEither app = Nat $ \x -> runReaderT x app
+
+readerServer :: App -> Server TodoApi
+readerServer app = enter (readerToEither app) server
+
+
+waiApp :: App -> Application
+waiApp app = allowCors $ allowOptions $ serve todoApi (readerServer app)
 
 main :: IO ()
 main = do
   runDb $ Sqlite.runMigration migrateAll
   port <- read <$> getEnv "PORT"
-  run port waiApp
+  url <- getEnv "URL"
+  run port $ waiApp (App url)

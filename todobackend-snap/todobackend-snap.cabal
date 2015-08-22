@@ -20,6 +20,7 @@ executable todobackend-snap
   build-depends:         base >=4.6 && <4.9
                        , aeson
                        , bytestring
+                       , mtl
                        , persistent-sqlite
                        , snap
                        , snap-extras

@@ -10,28 +10,35 @@ import Web.PathPieces
 import TodoBackend.Model
 import TodoBackend.Utils
 
+json' :: String -> Sqlite.Entity Todo -> ActionM ()
+json' url = json . mkTodoResponse url
+
+jsonList :: String -> [Sqlite.Entity Todo] -> ActionM ()
+jsonList url = json . map (mkTodoResponse url)
+
 main :: IO ()
 main = do
   runDb $ Sqlite.runMigration migrateAll
   port <- read <$> getEnv "PORT"
+  url <- getEnv "URL"
   scotty port $ do
     middleware allowCors
     middleware allowOptions
     get "/todos" $ do
       todos <- liftIO readTodos
-      json todos
+      jsonList url todos
     get "/todos/:id" $ do
       pid <- param "id"
       actionOr404 pid (\tid -> do
                 Just todo <- liftIO $ readTodo tid
-                json (Sqlite.Entity tid todo))
+                json' url (Sqlite.Entity tid todo))
     patch "/todos/:id" $ do
       pid <- param "id"
       actionOr404 pid (\tid -> do
                           todoAct <- jsonData
                           let todoUp = actionToUpdates todoAct
                           todo <- liftIO $ runDb $ Sqlite.updateGet tid todoUp
-                          json (Sqlite.Entity tid todo))
+                          json' url (Sqlite.Entity tid todo))
     delete "/todos/:id" $ do
       pid <- param "id"
       actionOr404 pid (liftIO . deleteTodo)
@@ -39,7 +46,7 @@ main = do
       todoAct <- jsonData
       let todo = actionToTodo todoAct
       tid <- liftIO $ insertTodo todo
-      json (Sqlite.Entity tid todo)
+      json' url (Sqlite.Entity tid todo)
     delete "/todos" $ liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
   where
     readTodos :: IO [Sqlite.Entity Todo]

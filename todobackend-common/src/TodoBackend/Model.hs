@@ -6,6 +6,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 module TodoBackend.Model where
 
 import Control.Applicative ((<$>), (<*>))
@@ -14,6 +15,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT, ResourceT)
 import Data.Aeson
+import Data.Aeson.TH
 import Data.Maybe (fromMaybe)
 import qualified Database.Persist.Class as DB
 import qualified Database.Persist.Sqlite as Sqlite
@@ -29,19 +31,22 @@ Todo
     deriving Show
 |]
 
-instance ToJSON (Sqlite.Entity Todo) where
-  toJSON entity = object
-      [ "id" .= key
-      , "url" .= ("http://127.0.0.1:3000/todos/" ++ keyText)
-      , "title" .= todoTitle val
-      , "completed" .= todoCompleted val
-      , "order" .= todoOrder val
-      ]
-    where
-      key = Sqlite.entityKey entity
-      val = Sqlite.entityVal entity
-      keyText = Text.unpack $ toPathPiece key
+data TodoResponse = TodoResponse
+  { trid        :: Sqlite.Key Todo
+  , trurl       :: String
+  , trtitle     :: String
+  , trcompleted :: Bool
+  , trorder     :: Int
+  } deriving (Show)
 
+$(deriveToJSON defaultOptions { fieldLabelModifier = drop 2}
+  ''TodoResponse)
+
+mkTodoResponse :: String -> Sqlite.Entity Todo -> TodoResponse
+mkTodoResponse rootUrl (Sqlite.Entity key Todo{..}) =
+    TodoResponse key todoUrl todoTitle todoCompleted todoOrder
+  where
+    todoUrl = rootUrl ++ "/todos/" ++ Text.unpack (toPathPiece key)
 
 data TodoAction = TodoAction
   { actTitle :: Maybe String
