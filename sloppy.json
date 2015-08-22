@@ -1,0 +1,100 @@
+{
+    "project": "todobackend-haskell",
+    "services": [
+        {
+            "id": "todobackends",
+            "apps": [
+                {
+                    "id": "todobackend-scotty",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-scotty.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:scotty",
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-scotty.sloppy.zone"
+                    }
+                },
+                {
+                    "id": "todobackend-servant",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-servant.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:servant",
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-servant.sloppy.zone"
+                    }
+                },
+                {
+                    "id": "todobackend-snap",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-snap.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:snap",
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-snap.sloppy.zone"
+                    }
+                },
+                {
+                    "id": "todobackend-spock",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-spock.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:spock",
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-spock.sloppy.zone"
+                    }
+                },
+                {
+                    "id": "todobackend-yesod",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-yesod.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:yesod",
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-yesod.sloppy.zone"
+                    }
+                }
+            ]
+        }
+    ]
+}
