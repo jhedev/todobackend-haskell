@@ -7,6 +7,18 @@ This repository provides different Haskell implementations for [todobackend](htt
 The [`todobackend-common`](https://github.com/jhedev/todobackend-haskell/tree/master/todobackend-common) package
 implements common functionality, such as the model and some utils.
 
+### Building and running locally
+
+Make sure you have [`stack`](https://github.com/commercialhaskell/stack) installed.
+
+To build and run `todobackend-scotty` execute the following:
+
+```
+stack build todobackend-scotty # This will take some time
+PORT=3000 URL=http://localhost:3000 stack exec todobackend-scotty
+```
+
+Similar for the other implementations.
 
 ### Docker images
 
