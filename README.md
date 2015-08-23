@@ -13,7 +13,7 @@ implements common functionality, such as the model and some utils.
 To run the docker container of the scotty implementation:
 
 ```
-docker run --rm -it -p 3000:3000 jhedev/todobackend-haskell:scotty 
+docker run --rm -it -p 3000:3000 -e URL=http://localhost:3000 jhedev/todobackend-haskell:scotty
 ```
 
 The application is now running on port 3000. For any other implementation just replace `scotty` with `servant`, `snap`, `spock` or `yesod`.
