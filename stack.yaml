@@ -11,4 +11,4 @@ extra-deps:
 - digestive-functors-heist-0.8.6.2
 - digestive-functors-snap-0.6.1.3
 - readable-0.3.1
-resolver: nightly-2015-07-28
+resolver: lts-3.12
