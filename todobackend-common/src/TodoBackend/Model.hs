@@ -32,7 +32,7 @@ Todo
 |]
 
 data TodoResponse = TodoResponse
-  { trid        :: Sqlite.Key Todo
+  { trid        :: TodoId
   , trurl       :: String
   , trtitle     :: String
   , trcompleted :: Bool
