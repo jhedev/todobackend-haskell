@@ -1,11 +1,15 @@
 flags: {}
 packages:
 - todobackend-common
+- todobackend-happstack
 - todobackend-scotty
 - todobackend-servant
 - todobackend-snap
 - todobackend-spock
 - todobackend-yesod
+- location:
+    git: https://github.com/Happstack/happstack-server.git
+    commit: 274b95b67a4a7bebb466917e69f52168537b2d8f
 extra-deps:
 - snap-extras-0.11.0.1
 - digestive-functors-heist-0.8.6.2
