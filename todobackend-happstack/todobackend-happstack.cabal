@@ -21,6 +21,7 @@ executable todobackend-happstack
                        , aeson
                        , bytestring
                        , happstack-server
+                       , mtl
                        , path-pieces
                        , persistent-sqlite
                        , todobackend-common
