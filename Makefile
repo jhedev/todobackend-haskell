@@ -1,6 +1,6 @@
 UNAME="$(shell uname -s)"
 
-all: scotty.docker servant.docker snap.docker spock.docker yesod.docker
+all: happstack.docker scotty.docker servant.docker snap.docker spock.docker yesod.docker
 
 %.bin:
 ifeq ($(UNAME), "Darwin")
@@ -14,4 +14,3 @@ endif
 
 push:
 	docker push jhedev/todobackend-haskell
-
