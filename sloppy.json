@@ -5,6 +5,25 @@
             "id": "todobackends",
             "apps": [
                 {
+                    "id": "todobackend-happstack",
+                    "domain": {
+                        "type": "HTTP",
+                        "uri": "todobackend-happstack.sloppy.zone"
+                    },
+                    "mem": 512,
+                    "image": "jhedev/todobackend-haskell:happstack",
+                    "force_pull_image": true,
+                    "instances": 1,
+                    "port_mappings": [
+                        {
+                            "container_port": 3000
+                        }
+                    ],
+                    "env": {
+                        "URL": "http://todobackend-happstack.sloppy.zone"
+                    }
+                },
+                {
                     "id": "todobackend-scotty",
                     "domain": {
                         "type": "HTTP",
