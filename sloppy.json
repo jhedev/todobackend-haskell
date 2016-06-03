@@ -2,15 +2,15 @@
     "project": "todobackend-haskell",
     "services": [
         {
-            "id": "todobackends",
+            "id": "backends",
             "apps": [
                 {
-                    "id": "todobackend-happstack",
+                    "id": "happstack",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-happstack.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:happstack",
                     "force_pull_image": true,
                     "instances": 1,
@@ -24,12 +24,12 @@
                     }
                 },
                 {
-                    "id": "todobackend-scotty",
+                    "id": "scotty",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-scotty.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:scotty",
                     "force_pull_image": true,
                     "instances": 1,
@@ -43,12 +43,12 @@
                     }
                 },
                 {
-                    "id": "todobackend-servant",
+                    "id": "servant",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-servant.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:servant",
                     "force_pull_image": true,
                     "instances": 1,
@@ -62,12 +62,12 @@
                     }
                 },
                 {
-                    "id": "todobackend-snap",
+                    "id": "snap",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-snap.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:snap",
                     "force_pull_image": true,
                     "instances": 1,
@@ -81,12 +81,12 @@
                     }
                 },
                 {
-                    "id": "todobackend-spock",
+                    "id": "spock",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-spock.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:spock",
                     "force_pull_image": true,
                     "instances": 1,
@@ -100,12 +100,12 @@
                     }
                 },
                 {
-                    "id": "todobackend-yesod",
+                    "id": "yesod",
                     "domain": {
                         "type": "HTTP",
                         "uri": "todobackend-yesod.sloppy.zone"
                     },
-                    "mem": 512,
+                    "mem": 100,
                     "image": "jhedev/todobackend-haskell:yesod",
                     "force_pull_image": true,
                     "instances": 1,
