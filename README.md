@@ -7,6 +7,19 @@ This repository provides different Haskell implementations for [todobackend](htt
 The [`todobackend-common`](https://github.com/jhedev/todobackend-haskell/tree/master/todobackend-common) package
 implements common functionality, such as the model and some utils.
 
+### Demos
+
+Hosting sponsored by [sloppy.io](https://sloppy.io).
+
+The running demos can be found at:
+
+* [todobackend-happstack.sloppy.zone](https://todobackend-happstack.sloppy.zone)
+* [todobackend-scotty.sloppy.zone](https://todobackend-scotty.sloppy.zone)
+* [todobackend-servant.sloppy.zone](https://todobackend-servant.sloppy.zone)
+* [todobackend-snap.sloppy.zone](https://todobackend-snap.sloppy.zone)
+* [todobackend-spock.sloppy.zone](https://todobackend-spock.sloppy.zone)
+* [todobackend-yesod.sloppy.zone](https://todobackend-yesod.sloppy.zone)
+
 ### Building and running locally
 
 Make sure you have [`stack`](https://github.com/commercialhaskell/stack) installed.
