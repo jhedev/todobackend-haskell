@@ -9,7 +9,7 @@ implements common functionality, such as the model and some utils.
 
 ### Demos
 
-Hosting sponsored by [sloppy.io](https://sloppy.io).
+Hosting sponsored by **[sloppy.io](https://sloppy.io)**.
 
 The running demos can be found at:
 
