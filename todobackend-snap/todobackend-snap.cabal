@@ -22,8 +22,7 @@ executable todobackend-snap
                        , bytestring
                        , mtl
                        , persistent-sqlite
-                       , snap
-                       , snap-extras
+                       , snap >= 1.0
                        , todobackend-common
                        , transformers
 

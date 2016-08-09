@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-import Control.Applicative ((<$>))
 import Control.Monad.IO.Class (liftIO)
 import qualified Database.Persist.Sqlite as Sqlite
 import Network.HTTP.Types.Status (status404)

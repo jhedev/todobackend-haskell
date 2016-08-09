@@ -1,22 +1,34 @@
 {-# LANGUAGE OverloadedStrings #-}
-import Control.Applicative ((<$>))
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State.Class
+import Data.Aeson
 import qualified Data.ByteString.Char8 as C8
 import qualified Database.Persist.Sqlite as Sqlite
 import Snap
-import Snap.Extras.JSON
 import System.Environment
 
 import TodoBackend.Model
 
 data App = App
-  {
-    appRoot :: String
+  { appRoot :: String
   }
 
-json :: Sqlite.Entity Todo -> Handler App App ()
-json todo = do
+writeJSON :: (ToJSON a, MonadSnap m) => a -> m ()
+writeJSON j = do
+  modifyResponse $ setHeader "Content-Type" "application/json"
+  writeLBS . encode $ j
+
+getJSON :: FromJSON a => Handler App App (Either String a)
+getJSON = do
+    bodyVal <- decode `fmap` readRequestBody 50000
+    return $ case bodyVal of
+      Nothing -> Left "Invalid JSON data in POST body"
+      Just v -> case fromJSON v of
+                  Error e -> Left e
+                  Success a -> Right a
+
+returnJson :: Sqlite.Entity Todo -> Handler App App ()
+returnJson todo = do
   url <- gets appRoot
   writeJSON $ mkTodoResponse url todo
 
@@ -45,6 +57,7 @@ allowCors = mapM_ (modifyResponse . uncurry setHeader) [
 optionsResp :: Handler App App ()
 optionsResp = method OPTIONS allowCors
 
+
 todosHandler :: Handler App App ()
 todosHandler = do
   allowCors
@@ -60,7 +73,7 @@ todosHandler = do
         Right todoAct -> do
             let todo = actionToTodo todoAct
             tid <- liftIO $ runDb $ Sqlite.insert todo
-            json $ Sqlite.Entity tid todo
+            returnJson $ Sqlite.Entity tid todo
         Left _ -> writeBS "error"
    DELETE -> liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
    _ -> writeBS "error"
@@ -77,7 +90,7 @@ todoHandler = do
         case rqMethod req of
             GET -> do
                 Just todo <- liftIO $ runDb $ Sqlite.get tid
-                json $ Sqlite.Entity tid todo
+                returnJson $ Sqlite.Entity tid todo
             PATCH -> do
                 todoActE <- getJSON
                 case todoActE of
@@ -85,7 +98,7 @@ todoHandler = do
                   Right todoAct -> do
                     let todoUp = actionToUpdates todoAct
                     todo <- liftIO $ runDb $ Sqlite.updateGet tid todoUp
-                    json $ Sqlite.Entity tid todo
+                    returnJson $ Sqlite.Entity tid todo
             DELETE -> liftIO $ runDb $ Sqlite.delete tid
             _ -> undefined
 

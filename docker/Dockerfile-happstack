@@ -2,6 +2,6 @@ FROM haskell:7.10
 
 EXPOSE 3000
 ENV PORT=3000
-ADD .stack-work/install/x86_64-linux/lts-3.12/7.10.2/bin/todobackend-happstack /usr/bin/todobackend-happstack
+ADD .bin/todobackend-happstack /usr/bin/todobackend-happstack
 
 CMD todobackend-happstack

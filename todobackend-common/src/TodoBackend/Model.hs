@@ -9,15 +9,12 @@
 {-# LANGUAGE RecordWildCards #-}
 module TodoBackend.Model where
 
-import Control.Applicative ((<$>), (<*>))
 import Control.Monad (mzero)
-import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT, ResourceT)
 import Data.Aeson
 import Data.Aeson.TH
 import Data.Maybe (fromMaybe)
-import qualified Database.Persist.Class as DB
 import qualified Database.Persist.Sqlite as Sqlite
 import qualified Data.Text as Text
 import Database.Persist.TH

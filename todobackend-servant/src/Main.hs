@@ -1,10 +1,9 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE OverloadedStrings          #-}
-import           Control.Applicative          ((<$>))
 import           Control.Monad.IO.Class       (liftIO)
-import           Control.Monad.Reader         (ReaderT, runReaderT, lift, asks)
-import           Control.Monad.Trans.Either
+import           Control.Monad.Reader         (ReaderT, runReaderT, asks)
+import           Control.Monad.Trans.Except
 import           Data.Proxy
 import qualified Database.Persist.Sqlite      as Sqlite
 import           Network.Wai
@@ -23,12 +22,12 @@ data App = App
 
 type TodoApi = "todos" :> Get '[JSON] [TodoResponse]
             :<|> "todos" :> Delete '[JSON] ()
-            :<|> "todos" :> ReqBody '[JSON] TodoAction :> Post '[JSON] TodoResponse
+            :<|> "todos" :> ReqBody '[JSON] TodoAction :> PostCreated '[JSON] TodoResponse
             :<|> "todos" :> Capture "todoid" Integer :> Get '[JSON] TodoResponse
             :<|> "todos" :> Capture "todoid" Integer :> Delete '[JSON] ()
             :<|> "todos" :> Capture "todoid" Integer :> ReqBody '[JSON] TodoAction :> Patch '[JSON] TodoResponse
 
-type AppM = ReaderT App (EitherT ServantErr IO)
+type AppM = ReaderT App (ExceptT ServantErr IO)
 
 toResp :: Sqlite.Entity Todo -> AppM TodoResponse
 toResp todo = do
@@ -83,7 +82,7 @@ server =      getTodos
          :<|> deleteTodo
          :<|> patchTodo
 
-readerToEither :: App -> AppM :~> EitherT ServantErr IO
+readerToEither :: App -> AppM :~> ExceptT ServantErr IO
 readerToEither app = Nat $ \x -> runReaderT x app
 
 readerServer :: App -> Server TodoApi

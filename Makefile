@@ -4,7 +4,7 @@ all: happstack.docker scotty.docker servant.docker snap.docker spock.docker yeso
 
 %.bin:
 ifeq ($(UNAME), "Darwin")
-	docker run --rm -it -v ~/.stack:/root/.stack -v `pwd`:/code -w /code fpco/stack-build bash -c 'stack build todobackend-$(basename $@)'
+	docker run --rm -it -v ~/.stack:/root/.stack -v `pwd`:/code -w /code fpco/stack-build bash -c 'stack build todobackend-$(basename $@) --allow-different-user'
 else
 	stack build todobackend-$(basename $@)
 endif
