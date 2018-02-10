@@ -16,11 +16,12 @@ executable todobackend-servant
   main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.6 && <4.9
+  build-depends:       base >=4.6 && <5
                      , either
                      , mtl
                      , persistent-sqlite
-                     , servant-server >= 0.4
+                     , servant >= 0.11
+                     , servant-server >= 0.11
                      , todobackend-common
                      , transformers
                      , wai
