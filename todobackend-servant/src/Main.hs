@@ -1,14 +1,17 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE OverloadedStrings          #-}
+import qualified Control.Category as C
 import           Control.Monad.IO.Class       (liftIO)
 import           Control.Monad.Reader         (ReaderT, runReaderT, asks)
 import           Control.Monad.Trans.Except
 import           Data.Proxy
 import qualified Database.Persist.Sqlite      as Sqlite
+import           GHC.TypeLits (Nat)
 import           Network.Wai
 import           Network.Wai.Handler.Warp     (run)
 import           Servant
+import           Servant.Utils.Enter
 import           System.Environment
 
 import           TodoBackend.Model
@@ -27,7 +30,7 @@ type TodoApi = "todos" :> Get '[JSON] [TodoResponse]
             :<|> "todos" :> Capture "todoid" Integer :> Delete '[JSON] ()
             :<|> "todos" :> Capture "todoid" Integer :> ReqBody '[JSON] TodoAction :> Patch '[JSON] TodoResponse
 
-type AppM = ReaderT App (ExceptT ServantErr IO)
+type AppM = ReaderT App Handler
 
 toResp :: Sqlite.Entity Todo -> AppM TodoResponse
 toResp todo = do
@@ -82,12 +85,11 @@ server =      getTodos
          :<|> deleteTodo
          :<|> patchTodo
 
-readerToEither :: App -> AppM :~> ExceptT ServantErr IO
-readerToEither app = Nat $ \x -> runReaderT x app
-
 readerServer :: App -> Server TodoApi
-readerServer app = enter (readerToEither app) server
-
+readerServer app = enter (nt app) server
+  where
+    nt :: App -> AppM :~> Handler
+    nt = runReaderTNat
 
 waiApp :: App -> Application
 waiApp app = allowCors $ allowOptions $ serve todoApi (readerServer app)

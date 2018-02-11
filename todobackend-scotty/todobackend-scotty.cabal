@@ -6,18 +6,18 @@ license:             MIT
 license-file:        LICENSE
 author:              Joel Hermanns
 maintainer:          joel.hermanns@gmail.com
--- copyright:           
+-- copyright:
 category:            Web
 build-type:          Simple
--- extra-source-files:  
+-- extra-source-files:
 cabal-version:       >=1.10
 
 executable todobackend-scotty
   main-is:             Main.hs
   ghc-options:         -Wall
-  -- other-modules:       
-  -- other-extensions:    
-  build-depends:         base >=4.6 && <4.9
+  -- other-modules:
+  -- other-extensions:
+  build-depends:         base >=4.6 && <5
                        , http-types
                        , scotty
                        , path-pieces

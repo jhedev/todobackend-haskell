@@ -3,7 +3,7 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Database.Persist.Sqlite as Sqlite
 import Network.HTTP.Types.Status (status404)
 import System.Environment
-import Web.Spock.Safe
+import Web.Spock.Core
 import Web.PathPieces
 
 import TodoBackend.Model
