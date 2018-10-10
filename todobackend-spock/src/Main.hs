@@ -23,29 +23,29 @@ main = do
   runSpock port $ spockT id $ do
     middleware allowCors
     middleware allowOptions
-    subcomponent "/todos" $ do
-        get root $ do
-            todos <- liftIO $ runDb $ Sqlite.selectList [] ([] :: [Sqlite.SelectOpt Todo])
-            jsonList url todos
-        get var $ \tid -> actionOr404 tid (\ident -> do
-                        Just todo <- liftIO $ runDb $ Sqlite.get
-                                     (ident :: TodoId)
+    get (sub root) $ do
+        todos <- liftIO $ runDb $ Sqlite.selectList [] ([] :: [Sqlite.SelectOpt Todo])
+        jsonList url todos
+    get (sub var) $ \tid -> actionOr404 tid (\ident -> do
+                    Just todo <- liftIO $ runDb $ Sqlite.get
+                                  (ident :: TodoId)
+                    json' url (Sqlite.Entity ident todo))
+    patch (sub var) $ \tid -> actionOr404 tid (\ident -> do
+                        todoAct <- jsonBody'
+                        let todoUp = actionToUpdates todoAct
+                        todo <- liftIO $ runDb $ Sqlite.updateGet
+                                ident todoUp
                         json' url (Sqlite.Entity ident todo))
-        patch var $ \tid -> actionOr404 tid (\ident -> do
-                            todoAct <- jsonBody'
-                            let todoUp = actionToUpdates todoAct
-                            todo <- liftIO $ runDb $ Sqlite.updateGet
-                                    ident todoUp
-                            json' url (Sqlite.Entity ident todo))
-        delete var $ \tid -> actionOr404 tid (\ident ->
-                             liftIO $ runDb $ Sqlite.delete (ident :: TodoId))
-        post root $ do
-            todoAct <- jsonBody'
-            let todo = actionToTodo todoAct
-            tid <- liftIO $ runDb $ Sqlite.insert todo
-            json' url (Sqlite.Entity tid todo)
-        delete root $ liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
+    delete (sub var) $ \tid -> actionOr404 tid (\ident ->
+                          liftIO $ runDb $ Sqlite.delete (ident :: TodoId))
+    post (sub root) $ do
+        todoAct <- jsonBody'
+        let todo = actionToTodo todoAct
+        tid <- liftIO $ runDb $ Sqlite.insert todo
+        json' url (Sqlite.Entity tid todo)
+    delete (sub root) $ liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
   where
     actionOr404 pid action = case fromPathPiece pid of
             Nothing  -> setStatus status404
             Just tid -> action tid
+    sub = (<//>)"todos"
