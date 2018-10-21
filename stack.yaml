@@ -15,4 +15,4 @@ extra-deps:
 - xmlhtml-0.2.5.2
 - map-syntax-0.3
 - pwstore-fast-2.4.4
-resolver: lts-12.12
+resolver: lts-12.14
