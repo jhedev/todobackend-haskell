@@ -1,8 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-import Control.Monad (msum)
 import Control.Monad.Reader
-import Control.Monad.IO.Class (liftIO)
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Database.Persist.Sqlite as Sqlite

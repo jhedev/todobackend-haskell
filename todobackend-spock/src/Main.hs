@@ -27,9 +27,11 @@ main = do
         todos <- liftIO $ runDb $ Sqlite.selectList [] ([] :: [Sqlite.SelectOpt Todo])
         jsonList url todos
     get (sub var) $ \tid -> actionOr404 tid (\ident -> do
-                    Just todo <- liftIO $ runDb $ Sqlite.get
+                    mtodo <- liftIO $ runDb $ Sqlite.get
                                   (ident :: TodoId)
-                    json' url (Sqlite.Entity ident todo))
+                    case mtodo of
+                      Nothing -> setStatus status404
+                      Just todo -> json' url (Sqlite.Entity ident todo))
     patch (sub var) $ \tid -> actionOr404 tid (\ident -> do
                         todoAct <- jsonBody'
                         let todoUp = actionToUpdates todoAct

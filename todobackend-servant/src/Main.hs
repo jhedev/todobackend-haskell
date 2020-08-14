@@ -11,7 +11,7 @@ import           GHC.TypeLits (Nat)
 import           Network.Wai
 import           Network.Wai.Handler.Warp     (run)
 import           Servant
-import           Servant.Utils.Enter
+import           Servant.Server (hoistServer, err404)
 import           System.Environment
 
 import           TodoBackend.Model
@@ -56,8 +56,10 @@ deleteTodos =  liftIO $ runDb $ Sqlite.deleteWhere ([] :: [Sqlite.Filter Todo])
 getTodo :: Integer -> AppM TodoResponse
 getTodo tid = do
   let tKey = Sqlite.toSqlKey (fromIntegral tid)
-  Just todo <- liftIO $ runDb $ Sqlite.get tKey
-  toResp $ Sqlite.Entity tKey todo
+  mtodo <- liftIO $ runDb $ Sqlite.get tKey
+  case mtodo of
+    Nothing -> throwError err404
+    Just todo -> toResp $ Sqlite.Entity tKey todo
 
 deleteTodo :: Integer -> AppM ()
 deleteTodo tid = do
@@ -86,10 +88,10 @@ server =      getTodos
          :<|> patchTodo
 
 readerServer :: App -> Server TodoApi
-readerServer app = enter (nt app) server
+readerServer app = hoistServer todoApi nt server
   where
-    nt :: App -> AppM :~> Handler
-    nt = runReaderTNat
+    nt :: AppM x -> Handler x
+    nt = flip runReaderT app
 
 waiApp :: App -> Application
 waiApp app = allowCors $ allowOptions $ serve todoApi (readerServer app)

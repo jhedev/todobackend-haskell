@@ -40,7 +40,7 @@ getTodosR = do
 
 postTodosR :: Handler Value
 postTodosR = do
-  todoAct <- requireJsonBody
+  todoAct <- requireCheckJsonBody
   let todo = actionToTodo todoAct
   tid <- liftIO $ runDb $ Sqlite.insert todo
   json $ Sqlite.Entity tid todo
@@ -57,7 +57,7 @@ getTodoR tid = do
 
 patchTodoR :: TodoId -> Handler Value
 patchTodoR tid = do
-  todoAct <- requireJsonBody
+  todoAct <- requireCheckJsonBody
   let todoUp = actionToUpdates todoAct
   todo <- liftIO $ runDb $ Sqlite.updateGet tid todoUp
   json $ Sqlite.Entity tid todo
