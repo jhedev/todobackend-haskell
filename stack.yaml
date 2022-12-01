@@ -19,4 +19,4 @@ extra-deps:
 - stm-containers-0.2.16@sha256:e98efa8dcf0045ea8a78a04b4e2763cf2d8bc33aad0750e2f30a67f8f4e933b1,8454
 - xmlhtml-0.2.5.2@sha256:3f0990f725551985d777e8edb5563fe99aee998f1fde6a7633f720f76df54701,46997
 allow-newer: true
-resolver: lts-16.9
+resolver: lts-18.8
