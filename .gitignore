@@ -3,3 +3,5 @@ dist
 *.sqlite3
 
 client_session_key.aes
+
+.amp/portals/*

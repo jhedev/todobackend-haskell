@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Prepares an Amp orb to build this repository: installs Stack, the GHC pinned
+# by stack.yaml's resolver, and every package dependency. Safe to rerun.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+step() {
+  printf '\n==> %s\n' "$1"
+  SECONDS=0
+}
+done_step() { printf '<== done in %ss\n' "$SECONDS"; }
+
+step "System packages"
+packages=(curl ca-certificates build-essential libgmp-dev zlib1g-dev libffi-dev libncurses-dev libtinfo6 pkg-config)
+missing=()
+for pkg in "${packages[@]}"; do
+  dpkg -s "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
+done
+if ((${#missing[@]})); then
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${missing[@]}"
+fi
+done_step
+
+step "Stack"
+# ~/.local/bin is already on PATH in orb login shells.
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+if ! command -v stack >/dev/null 2>&1; then
+  curl -fsSL https://get.haskellstack.org/stable/linux-x86_64.tar.gz \
+    | tar xz --wildcards --strip-components=1 -C "$HOME/.local/bin" '*/stack'
+fi
+stack --version
+done_step
+
+step "GHC (resolver from stack.yaml)"
+stack --no-terminal setup
+done_step
+
+step "Haskell dependencies"
+# A cold build takes about 15 minutes, close to Amp's 20-minute setup limit.
+# Cap it so setup still succeeds and Amp snapshots the libraries installed so
+# far; the next setup run on that snapshot continues where this one stopped.
+deps_complete=true
+status=0
+timeout --signal=INT --kill-after=30s 13m stack --no-terminal build --only-dependencies || status=$?
+if ((status == 124)); then
+  deps_complete=false
+  echo "Dependency build hit the time cap; a later setup run will finish it."
+elif ((status != 0)); then
+  exit "$status"
+fi
+done_step
+
+if $deps_complete; then
+  step "Build all packages"
+  stack --no-terminal build
+  done_step
+fi
