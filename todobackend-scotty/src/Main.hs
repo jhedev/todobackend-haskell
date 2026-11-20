@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-import Control.Monad.IO.Class (liftIO)
 import qualified Database.Persist.Sqlite as Sqlite
 import Network.HTTP.Types.Status (status404)
 import System.Environment
@@ -27,19 +26,19 @@ main = do
       todos <- liftIO readTodos
       jsonList url todos
     get "/todos/:id" $ do
-      pid <- param "id"
+      pid <- pathParam "id"
       actionOr404 pid (\tid -> do
                 Just todo <- liftIO $ readTodo tid
                 json' url (Sqlite.Entity tid todo))
     patch "/todos/:id" $ do
-      pid <- param "id"
+      pid <- pathParam "id"
       actionOr404 pid (\tid -> do
                           todoAct <- jsonData
                           let todoUp = actionToUpdates todoAct
                           todo <- liftIO $ runDb $ Sqlite.updateGet tid todoUp
                           json' url (Sqlite.Entity tid todo))
     delete "/todos/:id" $ do
-      pid <- param "id"
+      pid <- pathParam "id"
       actionOr404 pid (liftIO . deleteTodo)
     post "/todos" $ do
       todoAct <- jsonData

@@ -12,7 +12,7 @@ step() {
 done_step() { printf '<== done in %ss\n' "$SECONDS"; }
 
 step "System packages"
-packages=(curl ca-certificates build-essential libgmp-dev zlib1g-dev libffi-dev libncurses-dev libtinfo6 pkg-config)
+packages=(curl ca-certificates git build-essential libgmp-dev zlib1g-dev libffi-dev libncurses-dev libtinfo6 pkg-config)
 missing=()
 for pkg in "${packages[@]}"; do
   dpkg -s "$pkg" >/dev/null 2>&1 || missing+=("$pkg")

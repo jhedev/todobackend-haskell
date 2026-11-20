@@ -19,7 +19,6 @@ executable todobackend-spock
   -- other-extensions:
   build-depends:         base >=4.6 && <5
                        , http-types
-                       , Spock
                        , Spock-core
                        , path-pieces
                        , persistent-sqlite

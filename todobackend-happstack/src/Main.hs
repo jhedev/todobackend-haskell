@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+import Control.Monad (msum)
 import Control.Monad.Reader
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as L
